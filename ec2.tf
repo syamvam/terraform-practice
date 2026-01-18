@@ -1,8 +1,9 @@
 resource "aws_security_group" "allow_ssh_terraform"{
-    name = "allow_ssh"
+    name = var.sg_name
     description ="Allow port number 22 for SSH access"
 
  # usually we allow for outgoing traffic
+ #block
   egress {
     from_port        = 0
     to_port          = 0
@@ -11,19 +12,17 @@ resource "aws_security_group" "allow_ssh_terraform"{
     ipv6_cidr_blocks = ["::/0"]
   }
 ingress {
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"] # allow every one
+    from_port        = var.from_port
+    to_port          = var.to_port
+    protocol         = var.protocol
+    cidr_blocks      = var.ingress_cidr # allow every one
     ipv6_cidr_blocks = ["::/0"]
   }
-  tags = {
-    Name = "allow_ssh"
-  }  
+  tags = var.tags  
 }
   resource "aws_instance" "terraform" {
-  ami = "ami-07ff62358b87c7116"
-  instance_type = "t3.micro"
+  ami = var.ami_id
+  instance_type = var.instance_type
   vpc_security_group_ids =[aws_security_group.allow_ssh_terraform.id]
   tags = {
     Name = "terraform"
